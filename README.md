@@ -26,19 +26,30 @@ npm run dev
 3. `main` に push すると自動でデプロイ
 4. 公開 URL: `https://<github-user>.github.io/bees-nippo/`
 
-## 日々の運用フロー
+## 日々の運用フロー（GitHub に直接公開）
 
 1. `#/edit` を開く
 2. 前日のアクティブ案件＋メモが繰り越されているので、変わった案件だけ書き換える
-   - 「前日コピー」ボタンで前日メモを再投入できる
+   - 「前日コピー」ボタンで前日メモを再投入
    - 「今日から外す」で今日の日報には載せない（案件自体は残る）
 3. 完了した案件にチェック → 翌日からは消える（その日には「完了」バッジ）
 4. 「今日のひとこと」を入力
-5. 必要ならパスワードを設定／変更（暗号化したい場合は「暗号化する」にチェック）
-6. **「暗号化して保存」** → `data.json` がダウンロード
-7. リポジトリの `public/data/data.json` を上書きして commit & push
-8. GitHub Actions のデプロイ完了後、トップで **「Discord 用テキストをコピー」**
-9. Discord に貼り付け
+5. パスワード欄に共有用パスワード（変更時のみ）／「暗号化する」にチェック
+6. **「GitHub に公開」** ボタンをクリック → 自動で `data.json` を GitHub に push
+7. 1〜2分後に公開ページ更新。「Discord 用テキストをコピー」で URL を取得 → Discord に貼り付け
+
+「JSON をダウンロード」「平文で保存」ボタンも残してあるので、手動で運用したい場合や、トークンが切れた時のバックアップとしても使える。
+
+## 初回だけ: GitHub 連携の設定
+
+1. https://github.com/settings/tokens?type=beta で **Fine-grained PAT** を発行
+   - Resource owner: 自分（yamadap-commits）
+   - Repository access: `bees-nippo` のみ
+   - Repository permissions: **Contents: Read and write**
+   - Expiration: お好みで（長めにしておくと再発行不要）
+2. エディタの「公開（GitHub Pages）」セクションで「GitHub 連携を設定する」
+3. owner=`yamadap-commits`, repo=`bees-nippo` と PAT を入れて「保存して接続テスト」
+4. 通れば以降は「GitHub に公開」1クリックで OK
 
 ## パスワードについて
 
