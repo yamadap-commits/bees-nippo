@@ -7,6 +7,7 @@ import {
   type LoadResult,
 } from "./data";
 import { decryptJson, type EncryptedBlob } from "./crypto";
+import { consumeAdminQuery, setAdmin } from "./admin";
 import { emptyData, type DataFile } from "./types";
 import Today from "./views/Today";
 import Archive from "./views/Archive";
@@ -29,6 +30,10 @@ export default function App() {
   const [pwError, setPwError] = useState<string>("");
   const [pwInput, setPwInput] = useState("");
   const [pwPersistent, setPwPersistent] = useState(true);
+  const [admin, setAdminState] = useState<boolean>(() => consumeAdminQuery());
+
+  const effectiveRoute: Route =
+    route === "editor" && !admin ? "today" : route;
 
   useEffect(() => {
     void loadData().then(setLoad);
@@ -36,6 +41,18 @@ export default function App() {
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
+
+  useEffect(() => {
+    if (route === "editor" && !admin) {
+      window.location.hash = "#/";
+    }
+  }, [route, admin]);
+
+  const exitAdmin = () => {
+    setAdmin(false);
+    setAdminState(false);
+    window.location.hash = "#/";
+  };
 
   useEffect(() => {
     if (!load) return;
@@ -136,11 +153,13 @@ export default function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <h1>日報</h1>
+        <h1>日報{admin && <span className="admin-badge" onClick={exitAdmin} title="管理者モード（クリックで解除）">admin</span>}</h1>
         <nav>
-          <a href="#/" className={route === "today" ? "on" : ""}>今日</a>
-          <a href="#/archive" className={route === "archive" ? "on" : ""}>アーカイブ</a>
-          <a href="#/edit" className={route === "editor" ? "on" : ""}>編集</a>
+          <a href="#/" className={effectiveRoute === "today" ? "on" : ""}>今日</a>
+          <a href="#/archive" className={effectiveRoute === "archive" ? "on" : ""}>アーカイブ</a>
+          {admin && (
+            <a href="#/edit" className={effectiveRoute === "editor" ? "on" : ""}>編集</a>
+          )}
           {load.kind === "encrypted" && (
             <button className="lock-btn" onClick={handleForget} title="パスワードを忘れる">
               🔒
@@ -149,9 +168,9 @@ export default function App() {
         </nav>
       </header>
       <main>
-        {route === "today" ? (
+        {effectiveRoute === "today" ? (
           <Today data={data} />
-        ) : route === "archive" ? (
+        ) : effectiveRoute === "archive" ? (
           <Archive data={data} />
         ) : (
           <Editor initial={data} currentPassword={password} encrypted={load.kind === "encrypted"} />

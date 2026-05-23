@@ -40,6 +40,18 @@ npm run dev
 
 「JSON をダウンロード」「平文で保存」ボタンも残してあるので、手動で運用したい場合や、トークンが切れた時のバックアップとしても使える。
 
+## 管理者モード（編集UI の表示制御）
+
+公開 URL を Discord で共有しても、閲覧者には「編集」タブが見えないようにしてある。自分のブラウザでだけ編集できる仕組み：
+
+- 有効化: 公開 URL に `?admin=on` を付けて 1 回開く（以降 localStorage に記録）
+  - 例: `https://yamadap-commits.github.io/bees-nippo/?admin=on`
+- 無効化: `?admin=off` を付けて開く、もしくはヘッダーの `admin` バッジをクリック
+
+管理者モード中は左上に小さい `admin` バッジが出る。`#/edit` への直アクセスも管理者モードでなければ自動で「今日」に戻る。
+
+これは UI 隠蔽用のフラグで、実際の書き込み保護は GitHub PAT 側の権限が担保する。
+
 ## 初回だけ: GitHub 連携の設定
 
 1. https://github.com/settings/tokens?type=beta で **Fine-grained PAT** を発行
